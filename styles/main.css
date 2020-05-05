@@ -18,3 +18,7 @@
 .movie-content span {
     font-weight: 700;
 }
+
+.movie-content img {
+    max-width: 20px;
+}
