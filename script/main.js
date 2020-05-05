@@ -38,6 +38,7 @@ $(document).ready(function () {
     buttonSearch.click(function() {
         // richiamo function api
         searchMovie(template, inputSearch, movieContainer);
+        searchTvShows(template, inputSearch, movieContainer);
     });
 
     // send message with enter 
@@ -45,6 +46,7 @@ $(document).ready(function () {
         if(e.which == 13 || e.keycode == 13) {
              // richiamo function api
             searchMovie(template, inputSearch, movieContainer);
+            searchTvShows(template, inputSearch, movieContainer);
         }
     });
 
@@ -55,6 +57,7 @@ $(document).ready(function () {
  * Function
  */
 
+//  fucntion search movie
 function searchMovie(template, input, addHtml) {
     // reset html with function reset
     reset(addHtml);
@@ -83,7 +86,7 @@ function searchMovie(template, input, addHtml) {
                         var movie = {
                             Titolo: risultatiRicerca.title,
                             TitoloOriginale: risultatiRicerca.original_title,
-                            LinguaOriginale: flag(risultatiRicerca),
+                            LinguaOriginale: flag(risultatiRicerca.original_language),
                             Voto: stars(risultatiRicerca.vote_average),
                             type: 'Film'
                         }  
@@ -93,7 +96,7 @@ function searchMovie(template, input, addHtml) {
                         addHtml.append(html);
                     }
                 } else {
-                    alert('nessun film trovato');
+                    // alert('nessun elemento trovato'); 
                     input.select(); //to fix
                 }
     
@@ -108,6 +111,64 @@ function searchMovie(template, input, addHtml) {
     }
 
 }
+
+
+// function search tv shows
+function searchTvShows(template, input, addHtml) {
+    // reset html with function reset
+    reset(addHtml);
+
+    // prendo valore dall'input
+    var search = input.val().trim();
+    
+    if (search !== '') {
+        // richiamo api
+        $.ajax ({
+            url: 'https://api.themoviedb.org/3/search/tv',
+            method: 'GET',
+            data: {
+                api_key: '6fafa94922a93eb4871222ee2c1df6c9',
+                query: search,
+                language: 'it-IT'
+            },
+            success: function(res) {
+                var risultati = res.results;
+
+                if (risultati.length > 0 ) {
+                    for (var i = 0; i < risultati.length; i++) {
+                        var risultatiRicerca = risultati[i];
+                        
+                        // template date
+                        var tvShow = {
+                            Titolo: risultatiRicerca.name,
+                            TitoloOriginale: risultatiRicerca.original_name,
+                            LinguaOriginale: flag(risultatiRicerca.original_language),
+                            Voto: stars(risultatiRicerca.vote_average),
+                            type: 'Serie TV'
+                        }  
+                                 
+                        // print in html
+                        var html = template(tvShow);
+                        addHtml.append(html);
+                    }
+                } else {
+                    // alert('nessun elemento trovato');
+                    input.select(); //to fix
+                }
+    
+            },
+            error: function() {
+                addHtml.append('Chiamata API non riuscita');
+            }
+        })
+    } else {
+        alert(' Campo Vuoto, inserire un valore di ricerca');
+        input.focus(); // to fix
+    }
+
+}
+
+
 
 // funcition reset elemento lista
 function reset(element) {
@@ -138,17 +199,16 @@ function stars (voto) {
 }
 
 // flag change function
-function flag (risultatiRicerca) {
+function flag (flagLanguage) {
     // img bandiere
-    var imgFlag = '';
+    var imgFlag = 'flagLanguage.original_language';
 
-    if (risultatiRicerca === 'it') {
+    if (flagLanguage === 'it') {
         imgFlag = '<img src="img/it.svg" alt="italian-flag">'
-    } else if (risultatiRicerca === 'en') {
+    } else if (flagLanguage === 'en') {
         imgFlag = '<img src="img/en.svg" alt="italian-flag">'
     } else {
-        imgFlag = risultatiRicerca.original_language;
-        console.log(imgFlag);
+        imgFlag = flagLanguage;
     }
     return imgFlag;
 }
