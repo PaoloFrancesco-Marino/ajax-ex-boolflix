@@ -173,6 +173,11 @@ function print(template, risultati, addHtml, type) {
 
         var titolo, titoloOriginale;
 
+        var copertinaImg = 'https://image.tmdb.org/t/p/w342'
+        var noCopertina =  'img/no-poster.png'
+
+        var poster = risultatiRicerca.poster_path;
+
         if (type == 'Film') {
             titolo = risultatiRicerca.title,
             titoloOriginale = risultatiRicerca.original_title
@@ -180,14 +185,20 @@ function print(template, risultati, addHtml, type) {
             titolo = risultatiRicerca.name,
             titoloOriginale = risultatiRicerca.original_name
         }
-        
+
+        if (poster === null) {
+            poster = noCopertina;
+        } else {
+            poster = copertinaImg + poster;
+        }
+
         // template date
         var movie = {
             titolo: titolo,
             titoloOriginale: titoloOriginale,
             linguaOriginale: flag(risultatiRicerca.original_language),
             voto: stars(risultatiRicerca.vote_average),
-            copertina: risultatiRicerca.poster_path,
+            copertina: poster,
             type: type
         }  
         
