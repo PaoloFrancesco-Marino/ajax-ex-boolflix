@@ -25,6 +25,14 @@ $(document).ready(function () {
 
     */
 
+    /**
+     * Milestone 3:
+        In questa milestone come prima cosa  faremo un refactor delle chiamate ajax creando un’unica funzione alla quale passeremo la url, la apy key, la query, il type, ecc… In questo modo potremo chiamare la ricerca sia con il keypress su enter che con il click.
+
+        Poi, aggiungiamo la copertina del film o della serie al nostro elenco. Ci viene passata dall’API solo la parte finale dell’URL, questo perché poi potremo generare da quella porzione di URL tante dimensioni diverse.
+
+     */
+
     //  refs
     var inputSearch = $('.input-search'); // input
     var buttonSearch = $('.button-search'); // button
@@ -66,7 +74,7 @@ function searchMovie(template, input, addHtml) {
     var search = input.val().trim();
     
     if (search !== '') {
-        // richiamo api
+        // richiamo api movies
         $.ajax ({
             url: 'https://api.themoviedb.org/3/search/movie',
             method: 'GET',
@@ -79,25 +87,11 @@ function searchMovie(template, input, addHtml) {
                 var risultati = res.results;
 
                 if (risultati.length > 0 ) {
-                    for (var i = 0; i < risultati.length; i++) {
-                        var risultatiRicerca = risultati[i];
-                        
-                        // template date
-                        var movie = {
-                            Titolo: risultatiRicerca.title,
-                            TitoloOriginale: risultatiRicerca.original_title,
-                            LinguaOriginale: flag(risultatiRicerca.original_language),
-                            Voto: stars(risultatiRicerca.vote_average),
-                            type: 'Film'
-                        }  
-                        
-                        // print in html
-                        var html = template(movie);
-                        addHtml.append(html);
-                    }
+                    // richiamo function print
+                    print(template, risultati, addHtml, 'Film')
                 } else {
                     // alert('nessun elemento trovato'); 
-                    input.select(); //to fix
+                    input.select(); 
                 }
     
             },
@@ -107,7 +101,7 @@ function searchMovie(template, input, addHtml) {
         })
     } else {
         alert(' Campo Vuoto, inserire un valore di ricerca');
-        input.focus(); // to fix
+        input.focus(); 
     }
 
 }
@@ -122,7 +116,7 @@ function searchTvShows(template, input, addHtml) {
     var search = input.val().trim();
     
     if (search !== '') {
-        // richiamo api
+        // richiamo api tv shows
         $.ajax ({
             url: 'https://api.themoviedb.org/3/search/tv',
             method: 'GET',
@@ -135,25 +129,11 @@ function searchTvShows(template, input, addHtml) {
                 var risultati = res.results;
 
                 if (risultati.length > 0 ) {
-                    for (var i = 0; i < risultati.length; i++) {
-                        var risultatiRicerca = risultati[i];
-                        
-                        // template date
-                        var tvShow = {
-                            Titolo: risultatiRicerca.name,
-                            TitoloOriginale: risultatiRicerca.original_name,
-                            LinguaOriginale: flag(risultatiRicerca.original_language),
-                            Voto: stars(risultatiRicerca.vote_average),
-                            type: 'Serie TV'
-                        }  
-                                 
-                        // print in html
-                        var html = template(tvShow);
-                        addHtml.append(html);
-                    }
+                    // richiamo function print
+                    print(template, risultati, addHtml, 'Serie TV')
                 } else {
                     // alert('nessun elemento trovato');
-                    input.select(); //to fix
+                    input.select();
                 }
     
             },
@@ -163,7 +143,7 @@ function searchTvShows(template, input, addHtml) {
         })
     } else {
         alert(' Campo Vuoto, inserire un valore di ricerca');
-        input.focus(); // to fix
+        input.focus(); 
     }
 
 }
@@ -184,7 +164,7 @@ function stars (voto) {
     var result = '';
 
     // range vote + math.floor
-    var finalVote = Math.floor(voto * 0.5);
+    var finalVote = Math.floor(voto / 2);
 
     // ciclo il voto ed aggiungo le stars
     for (var i = 0; i < 5; i++ ) {
@@ -201,14 +181,48 @@ function stars (voto) {
 // flag change function
 function flag (flagLanguage) {
     // img bandiere
-    var imgFlag = 'flagLanguage.original_language';
+    var imgFlag = '';
 
     if (flagLanguage === 'it') {
-        imgFlag = '<img src="img/it.svg" alt="italian-flag">'
+        imgFlag = '<img src="img/it.svg" alt="it-flag">'
     } else if (flagLanguage === 'en') {
-        imgFlag = '<img src="img/en.svg" alt="italian-flag">'
+        imgFlag = '<img src="img/en.svg" alt="en-flag">'
     } else {
         imgFlag = flagLanguage;
     }
     return imgFlag;
+}
+
+
+// function for print
+
+function print(template, risultati, addHtml, type) {
+
+    for (var i = 0; i < risultati.length; i++) {
+        var risultatiRicerca = risultati[i];
+
+        var titolo, titoloOriginale;
+
+        if (type == 'Film') {
+            titolo = risultatiRicerca.title,
+            titoloOriginale = risultatiRicerca.original_title
+        } else if (type == 'Serie TV') {
+            titolo = risultatiRicerca.name,
+            titoloOriginale = risultatiRicerca.original_name
+        }
+        
+        // template date
+        var movie = {
+            titolo: titolo,
+            titoloOriginale: titoloOriginale,
+            linguaOriginale: flag(risultatiRicerca.original_language),
+            voto: stars(risultatiRicerca.vote_average),
+            copertina: risultatiRicerca.poster_path,
+            type: type
+        }  
+        
+        // print in html
+        var html = template(movie);
+        addHtml.append(html);
+    }
 }

@@ -19,18 +19,19 @@
     <!-- Template Handlebars -->
     <script id="movie-template" type="text/x-handlebars-template">
         <div class="movie">
+            <img src="https://image.tmdb.org/t/p/w342{{ copertina }}" alt="">
             <ul class="movie-content">
                 <li> 
-                    <span>Titolo:</span> {{ Titolo }} 
+                    <span>Titolo:</span> {{ titolo }} 
                 </li>
                 <li> 
-                    <span>Titolo Originale:</span> {{ TitoloOriginale }} 
+                    <span>Titolo Originale:</span> {{ titoloOriginale }} 
                 </li>
                 <li> 
-                    <span>Lingua Originale: </span>{{{ LinguaOriginale }}}
+                    <span>Lingua Originale: </span>{{{ linguaOriginale }}}
                  </li>
                 <li> 
-                    <span>Voto:</span> {{{ Voto }}} 
+                    <span>Voto:</span> {{{ voto }}} 
                 </li>
                 <li> 
                     <span>Tipo:</span> {{ type }}
