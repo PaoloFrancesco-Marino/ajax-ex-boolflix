@@ -5,10 +5,49 @@
     box-sizing: border-box;
 }
 
-/* list style */
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+
+/* main header */
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #000;
+}
+
+.main-header .sx h2 {
+    text-transform: uppercase;
+    color: red;
+}
+
+
+/* app */
+.app {
+    min-height: 100vh;
+    width: 100%;
+    padding: 20px;
+    background-color: #434343;
+    text-align: center;
+}
+
+.movie-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+/* movie template */
 
 .movie {
+    width: calc(100%/ 5);
     margin-bottom: 20px;
+}
+
+.movie > img {
+    height: 500px;
 }
 
 .movie-content {
@@ -19,6 +58,6 @@
     font-weight: 700;
 }
 
-.movie-content img {
+.movie-content .flag img {
     max-width: 20px;
 }

@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Boolflix</title>
+    <!-- Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
     <!-- Main CSS -->
@@ -11,10 +14,22 @@
 </head>
 <body>
 
-    <input type="text" class="input-search" placeholder="Inserisci il titolo qui">
-    <button class="button-search">Cerca</button>
+    <header class="main-header">
+        <div class="sx">
+            <h2>Boolflix</h2>
+        </div>
+        <div class="dx">
+            <input type="text" class="input-search" placeholder="Inserisci il titolo qui">
+        <button class="button-search">Cerca</button>
+        </div>
+    </header>
 
-    <div class="movie-container"></div>
+    <!-- app -->
+    <div class="app">
+        <!-- movie container -->
+        <div class="movie-container">
+        </div>
+    </div>
 
     <!-- Template Handlebars -->
     <script id="movie-template" type="text/x-handlebars-template">
@@ -27,7 +42,7 @@
                 <li> 
                     <span>Titolo Originale:</span> {{ titoloOriginale }} 
                 </li>
-                <li> 
+                <li class="flag"> 
                     <span>Lingua Originale: </span>{{{ linguaOriginale }}}
                  </li>
                 <li> 
@@ -35,6 +50,9 @@
                 </li>
                 <li> 
                     <span>Tipo:</span> {{ type }}
+                </li>
+                <li> 
+                    <span>Trama:</span> {{ trama }}
                 </li>
             </ul>
         </div>

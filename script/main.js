@@ -107,7 +107,6 @@ function search(template, input, api, addHtml) {
                         input.select();
                     }
                 }
-
             },
             error: function() {
                 addHtml.append('Chiamata API non riuscita');
@@ -173,6 +172,7 @@ function print(template, risultati, addHtml, type) {
 
         var titolo, titoloOriginale;
 
+        // stampa img
         var copertinaImg = 'https://image.tmdb.org/t/p/w342'
         var noCopertina =  'img/no-poster.png'
 
@@ -199,7 +199,8 @@ function print(template, risultati, addHtml, type) {
             linguaOriginale: flag(risultatiRicerca.original_language),
             voto: stars(risultatiRicerca.vote_average),
             copertina: poster,
-            type: type
+            type: type,
+            trama: risultatiRicerca.overview
         }  
         
         // print in html
