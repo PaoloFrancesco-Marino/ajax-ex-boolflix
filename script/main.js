@@ -38,6 +38,10 @@ $(document).ready(function () {
     var buttonSearch = $('.button-search'); // button
     var movieContainer = $('.movie-container'); //html append
 
+    var movieApi = 'https://api.themoviedb.org/3/search/movie'; //api film
+    var tvShowsApi = 'https://api.themoviedb.org/3/search/tv'; //api Tvshows
+
+
     // Init Hndlenars
     var source = $('#movie-template').html();
     var template = Handlebars.compile(source);
@@ -45,16 +49,16 @@ $(document).ready(function () {
     // event click
     buttonSearch.click(function() {
         // richiamo function api
-        searchMovie(template, inputSearch, movieContainer);
-        searchTvShows(template, inputSearch, movieContainer);
+        search(template, inputSearch, movieApi, movieContainer);
+        search(template, inputSearch, tvShowsApi, movieContainer);
     });
 
     // send message with enter 
     inputSearch.keyup(function (e) { 
         if(e.which == 13 || e.keycode == 13) {
              // richiamo function api
-            searchMovie(template, inputSearch, movieContainer);
-            searchTvShows(template, inputSearch, movieContainer);
+            search(template, inputSearch, movieApi, movieContainer);
+            search(template, inputSearch, tvShowsApi, movieContainer);
         }
     });
 
@@ -66,7 +70,7 @@ $(document).ready(function () {
  */
 
 //  fucntion search movie
-function searchMovie(template, input, addHtml) {
+function search(template, input, api, addHtml) {
     // reset html with function reset
     reset(addHtml);
 
@@ -76,7 +80,7 @@ function searchMovie(template, input, addHtml) {
     if (search !== '') {
         // richiamo api movies
         $.ajax ({
-            url: 'https://api.themoviedb.org/3/search/movie',
+            url: api,
             method: 'GET',
             data: {
                 api_key: '6fafa94922a93eb4871222ee2c1df6c9',
@@ -86,14 +90,24 @@ function searchMovie(template, input, addHtml) {
             success: function(res) {
                 var risultati = res.results;
 
-                if (risultati.length > 0 ) {
-                    // richiamo function print
-                    print(template, risultati, addHtml, 'Film')
-                } else {
-                    // alert('nessun elemento trovato'); 
-                    input.select(); 
+                if (api = 'https://api.themoviedb.org/3/search/movie' ) {
+                    if (risultati.length > 0 ) {
+                        // richiamo function print
+                        print(template, risultati, addHtml, 'Film')
+                    } else {
+                        // alert('nessun elemento trovato'); 
+                        input.select(); 
+                    }
+                } else if (api = 'https://api.themoviedb.org/3/search/tv' ) {
+                    if (risultati.length > 0 ) {
+                        // richiamo function print
+                        print(template, risultati, addHtml, 'Serie TV')
+                    } else {
+                        // alert('nessun elemento trovato');
+                        input.select();
+                    }
                 }
-    
+
             },
             error: function() {
                 addHtml.append('Chiamata API non riuscita');
@@ -105,50 +119,6 @@ function searchMovie(template, input, addHtml) {
     }
 
 }
-
-
-// function search tv shows
-function searchTvShows(template, input, addHtml) {
-    // reset html with function reset
-    reset(addHtml);
-
-    // prendo valore dall'input
-    var search = input.val().trim();
-    
-    if (search !== '') {
-        // richiamo api tv shows
-        $.ajax ({
-            url: 'https://api.themoviedb.org/3/search/tv',
-            method: 'GET',
-            data: {
-                api_key: '6fafa94922a93eb4871222ee2c1df6c9',
-                query: search,
-                language: 'it-IT'
-            },
-            success: function(res) {
-                var risultati = res.results;
-
-                if (risultati.length > 0 ) {
-                    // richiamo function print
-                    print(template, risultati, addHtml, 'Serie TV')
-                } else {
-                    // alert('nessun elemento trovato');
-                    input.select();
-                }
-    
-            },
-            error: function() {
-                addHtml.append('Chiamata API non riuscita');
-            }
-        })
-    } else {
-        alert(' Campo Vuoto, inserire un valore di ricerca');
-        input.focus(); 
-    }
-
-}
-
-
 
 // funcition reset elemento lista
 function reset(element) {
