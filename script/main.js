@@ -200,7 +200,7 @@ function print(template, risultati, addHtml, type) {
             voto: stars(risultatiRicerca.vote_average),
             copertina: poster,
             type: type,
-            trama: risultatiRicerca.overview
+            trama: risultatiRicerca.overview.substring(1, 500)
         }  
         
         // print in html
