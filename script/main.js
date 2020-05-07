@@ -1,46 +1,9 @@
 $(document).ready(function () {
-    /**
-     * Milestone 1
-     * Creare un layout base con una searchbar (una input e un button) in cui possiamo scriverecompletamente o parzialmente il nome di un film. Possiamo, cliccando il  bottone, cercare sull’API tutti i film che contengono ciò che ha scritto l’utente.
-     * Vogliamo dopo la risposta dell’API visualizzare a schermo i seguenti valori per ogni film trovato: 
-            Titolo
-            Titolo Originale
-            Lingua Originale
-            Voto (media)
-     */
-
-
-     /**
-     * Milestone 2:
-        Trasformiamo il voto da 1 a 10 decimale in un numero intero da 1 a 5, così da permetterci di stampare a schermo un numero di stelle piene che vanno da 1 a 5, lasciando le restanti vuote (troviamo le icone in FontAwesome).
-        Arrotondiamo sempre per eccesso all’unità successiva, non gestiamo icone mezze piene (o mezze vuote :P)
-        Trasformiamo poi la stringa statica della lingua in una vera e propria bandiera della nazione corrispondente, gestendo il caso in cui non abbiamo la bandiera della nazione ritornata dall’API (le flag non ci sono in FontAwesome).
-
-        Riferimento template
-        Titolo: Barnyard - Ritorno al cortile
-        Titolo Originale: Back at the Barnyard
-        Lingua:  (bandiera o lingua)
-        Voto:  (stelle da 1 a 5)
-        Tipo: Tv o Film
-
-    */
-
-    /**
-     * Milestone 3:
-        In questa milestone come prima cosa  faremo un refactor delle chiamate ajax creando un’unica funzione alla quale passeremo la url, la apy key, la query, il type, ecc… In questo modo potremo chiamare la ricerca sia con il keypress su enter che con il click.
-
-        Poi, aggiungiamo la copertina del film o della serie al nostro elenco. Ci viene passata dall’API solo la parte finale dell’URL, questo perché poi potremo generare da quella porzione di URL tante dimensioni diverse.
-
-     */
 
     //  refs
     var inputSearch = $('.input-search'); // input
     var buttonSearch = $('.button-search'); // button
     var movieContainer = $('.movie-container'); //html append
-
-    var movieApi = 'https://api.themoviedb.org/3/search/movie'; //api film
-    var tvShowsApi = 'https://api.themoviedb.org/3/search/tv'; //api Tvshows
-
 
     // Init Hndlenars
     var source = $('#movie-template').html();
@@ -49,74 +12,84 @@ $(document).ready(function () {
     // event click
     buttonSearch.click(function() {
         // richiamo function api
-        search(template, inputSearch, movieApi, movieContainer);
-        search(template, inputSearch, tvShowsApi, movieContainer);
+        search(template, inputSearch, movieContainer);
     });
 
     // send message with enter 
     inputSearch.keyup(function (e) { 
         if(e.which == 13 || e.keycode == 13) {
              // richiamo function api
-            search(template, inputSearch, movieApi, movieContainer);
-            search(template, inputSearch, tvShowsApi, movieContainer);
+            search(template, inputSearch, movieContainer);
         }
     });
 
 }); // <-- End Doc Ready
 
 
-/**
+/*************
  * Function
- */
+ ************/
 
 //  fucntion search movie
-function search(template, input, api, addHtml) {
+function search(template, input, addHtml) {
     // reset html with function reset
     reset(addHtml);
-
+    // refs api
+    var apiKey = '6fafa94922a93eb4871222ee2c1df6c9';
+    var apiLang = 'it-IT';
     // prendo valore dall'input
     var search = input.val().trim();
     
     if (search !== '') {
-        // richiamo api movies
-        $.ajax ({
-            url: api,
-            method: 'GET',
-            data: {
-                api_key: '6fafa94922a93eb4871222ee2c1df6c9',
-                query: search,
-                language: 'it-IT'
-            },
-            success: function(res) {
-                var risultati = res.results;
-
-                if (api = 'https://api.themoviedb.org/3/search/movie' ) {
-                    if (risultati.length > 0 ) {
-                        // richiamo function print
-                        print(template, risultati, addHtml, 'Film')
-                    } else {
-                        // alert('nessun elemento trovato'); 
-                        input.select(); 
-                    }
-                } else if (api = 'https://api.themoviedb.org/3/search/tv' ) {
-                    if (risultati.length > 0 ) {
-                        // richiamo function print
-                        print(template, risultati, addHtml, 'Serie TV')
-                    } else {
-                        // alert('nessun elemento trovato');
-                        input.select();
-                    }
-                }
-            },
-            error: function() {
-                addHtml.append('Chiamata API non riuscita');
-            }
-        })
+        // richiamo API movies
+        var dataMovie = {
+            url: 'https://api.themoviedb.org/3/search/movie',
+            key: apiKey,
+            query: search,
+            lang: apiLang,
+            type: 'Film'
+        }
+        getData(dataMovie, template, addHtml);
+        // richiamo API TV Shows
+        var dataTvShows = {
+            url: 'https://api.themoviedb.org/3/search/tv',
+            key: apiKey,
+            query: search,
+            lang: apiLang,
+            type: 'Serie TV'
+        }
+        getData(dataTvShows, template, addHtml);
     } else {
         alert(' Campo Vuoto, inserire un valore di ricerca');
         input.focus(); 
     }
+}
 
+function getData(dataMovie, template, addHtml) {
+    // richiamo api movies
+    $.ajax ({
+        url: dataMovie.url,
+        method: 'GET',
+        data: {
+            api_key: dataMovie.key,
+            query: dataMovie.query,
+            language: dataMovie.lang,
+        },
+        success: function(res) {
+            var risultati = res.results;
+            
+            if (risultati.length > 0 ) {
+                // richiamo function print
+                print(template, risultati, addHtml, dataMovie.type);
+            } else {
+                // alert('nessun elemento trovato'); 
+                input.select(); 
+            }
+        },
+        error: function() {
+            addHtml.append('Chiamata API non riuscita');
+        }
+    })
 }
 
 // funcition reset elemento lista
@@ -131,10 +104,8 @@ function stars (voto) {
     var icoStarEmpty = '<i class="far fa-star"></i>';
     // save the result
     var result = '';
-
     // range vote + math.floor
     var finalVote = Math.floor(voto / 2);
-
     // ciclo il voto ed aggiungo le stars
     for (var i = 0; i < 5; i++ ) {
         if (finalVote > i) {
@@ -162,22 +133,18 @@ function flag (flagLanguage) {
     return imgFlag;
 }
 
-
 // function for print
-
 function print(template, risultati, addHtml, type) {
-
     for (var i = 0; i < risultati.length; i++) {
         var risultatiRicerca = risultati[i];
-
+        // refs
         var titolo, titoloOriginale;
-
+        // poster
+        var poster = risultatiRicerca.poster_path;
         // stampa img
         var copertinaImg = 'https://image.tmdb.org/t/p/w342'
         var noCopertina =  'img/no-poster.png'
-
-        var poster = risultatiRicerca.poster_path;
-
+        // stampa titolo
         if (type == 'Film') {
             titolo = risultatiRicerca.title,
             titoloOriginale = risultatiRicerca.original_title
@@ -185,13 +152,12 @@ function print(template, risultati, addHtml, type) {
             titolo = risultatiRicerca.name,
             titoloOriginale = risultatiRicerca.original_name
         }
-
+        // stampa img
         if (poster === null) {
             poster = noCopertina;
         } else {
             poster = copertinaImg + poster;
         }
-
         // template date
         var movie = {
             titolo: titolo,
